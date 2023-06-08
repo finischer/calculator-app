@@ -6,15 +6,25 @@ interface ICountdownProps {
     from: number // in seconds
     setPlaying: React.Dispatch<React.SetStateAction<boolean>>
     phase: string
+    onFinish?: () => void
 }
 
-const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlaying, phase }) => {
+const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlaying, phase, onFinish = () => null }) => {
     const [minutes, setMinutes] = useState(-1)
     const [seconds, setSeconds] = useState(-1)
 
     const formatNumber = (n: number) => {
         let formatted = "0" + n
         return formatted.slice(-2)
+    }
+
+    const initCounter = () => {
+        // setup minutes and seconds
+        const minutes = Math.floor(from / 60)
+        const seconds = from % 60
+
+        setMinutes(minutes)
+        setSeconds(seconds)
     }
 
     useEffect(() => {
@@ -47,16 +57,16 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
 
         if (seconds === 0 && minutes === 0) {
             setPlaying(false)
+            onFinish()
+
+            setTimeout(() => {
+                initCounter()
+            }, 500)
         }
     }, [seconds])
 
     useEffect(() => {
-        // setup minutes and seconds
-        const minutes = Math.floor(from / 60)
-        const seconds = from % 60
-
-        setMinutes(minutes)
-        setSeconds(seconds)
+        initCounter()
     }, [])
 
     return (

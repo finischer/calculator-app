@@ -11,22 +11,30 @@ export default function App() {
 
   const togglePlayButton = () => {
     if (!isPlayed) {
-      Animated.timing(animationProgress.current, {
-        toValue: 0.5,
-        duration: 300,
-        easing: Easing.linear,
-        useNativeDriver: true
-      }).start();
-      setIsPlayed(true)
+      startCounter()
     } else {
-      Animated.timing(animationProgress.current, {
-        toValue: 0,
-        duration: 300,
-        easing: Easing.linear,
-        useNativeDriver: true
-      }).start();
-      setIsPlayed(false)
+      stopCounter()
     }
+  }
+
+  const startCounter = () => {
+    Animated.timing(animationProgress.current, {
+      toValue: 0.5,
+      duration: 300,
+      easing: Easing.linear,
+      useNativeDriver: true
+    }).start();
+    setIsPlayed(true)
+  }
+
+  const stopCounter = () => {
+    Animated.timing(animationProgress.current, {
+      toValue: 0,
+      duration: 300,
+      easing: Easing.linear,
+      useNativeDriver: true
+    }).start();
+    setIsPlayed(false)
   }
 
 
@@ -41,10 +49,11 @@ export default function App() {
 
         <View className="flex-1 items-center justify-center py-5 w-full">
           <Countdown
-            from={10}
+            from={5}
             playing={isPlayed}
             setPlaying={setIsPlayed}
             phase='Pause'
+            onFinish={stopCounter}
           />
         </View>
 
