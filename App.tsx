@@ -1,76 +1,76 @@
 import { StatusBar } from 'expo-status-bar';
-import { Text, View, SafeAreaView, TextInput } from 'react-native';
-import RoundButton, { RoundButtonVariants } from './src/components/RoundButton';
-import { useState } from "react";
-
-const buttons = [
-  ['C', '+/-', '%', '/',],
-  ['7', '8', '9', "\u00d7",],
-  ['4', '5', '6', '-',],
-  ['1', '2', '3', '+',],
-  ['0', '.', '=']
-]
+import { Text, View, SafeAreaView, Pressable, Animated, Easing } from 'react-native';
+import React, { useRef, useState } from "react";
+import LottieView from 'lottie-react-native';
+import Countdown from './src/components/Countdown';
 
 export default function App() {
-  const [calculationInput, setCalculationInput] = useState<string>("")
+  const [isPlayed, setIsPlayed] = useState(false);
+  const animation = useRef<LottieView>(null);
+  const animationProgress = useRef(new Animated.Value(0))
+
+  const togglePlayButton = () => {
+    if (!isPlayed) {
+      Animated.timing(animationProgress.current, {
+        toValue: 0.5,
+        duration: 300,
+        easing: Easing.linear,
+        useNativeDriver: true
+      }).start();
+      setIsPlayed(true)
+    } else {
+      Animated.timing(animationProgress.current, {
+        toValue: 0,
+        duration: 300,
+        easing: Easing.linear,
+        useNativeDriver: true
+      }).start();
+      setIsPlayed(false)
+    }
+  }
+
+
 
   return (
-
     <SafeAreaView className="flex-1 justify-end items-center bg-slate-800">
       <StatusBar style="light" />
-      <View className='flex-col py-3'>
-        <View>
-          <Text className='text-white'>
-            {calculationInput}
-          </Text>
+      <View className="p-5">
+        <View className="text-center justify-center items-center">
+          <Text className="text-slate-100 text-lg">Workout Timer</Text>
         </View>
 
-        {buttons.map((row, rowIndex) => (
-          <View key={rowIndex} className="flex-row">
-            {row.map((button, btnIndex) => {
-              let variant: RoundButtonVariants = rowIndex === 0 ? "secondary" : "normal"
-              variant = btnIndex === row.length - 1 ? "accent" : variant // accent buttons = all right side buttons
+        <View className="flex-1 items-center justify-center py-5 w-full">
+          <Countdown
+            from={10}
+            playing={isPlayed}
+            setPlaying={setIsPlayed}
+            phase='Pause'
+          />
+        </View>
 
-              const bigButton = rowIndex === buttons.length - 1 && btnIndex === 0; // = button with number '0'
-              return <RoundButton onPress={() => setCalculationInput(oldState => oldState.concat(button))} key={rowIndex.toString().concat(btnIndex.toString())} content={button} variant={variant} bigButton={bigButton} />
-            })}
-          </View>
-        ))}
+        {/* Buttons */}
+        <View className='flex-1 items-center '>
+          <Pressable className=' bg-cyan-500 rounded-full justify-center items-center w-28 h-28' onPress={togglePlayButton}>
+            <LottieView
+              ref={animation}
+              progress={animationProgress.current}
+              source={require("./assets/lotties/play-stop.json")}
+              style={{
+                width: 100,
+                height: 100,
 
-        {/* <View className="flex-row">
-            <RoundButton content='C' variant='secondary' />
-            <RoundButton content='+/-' variant='secondary' />
-            <RoundButton content='%' variant='secondary' />
-            <RoundButton content='/' variant='accent' />
-          </View>
-          <View className="flex-row">
-            <RoundButton content='7' />
-            <RoundButton content='8' />
-            <RoundButton content='9' />
-            <RoundButton content={"\u00d7"} variant='accent' />
+              }}
+            />
+          </Pressable>
 
-          </View>
-          <View className="flex-row">
-
-            <RoundButton content='4' />
-            <RoundButton content='5' />
-            <RoundButton content='6' />
-            <RoundButton content='-' variant='accent' />
-          </View>
-
-          <View className="flex-row">
-            <RoundButton content='1' />
-            <RoundButton content='2' />
-            <RoundButton content='3' />
-            <RoundButton content='+' variant='accent' />
-          </View>
-
-          <View className="flex-row">
-            <RoundButton content='0' bigButton />
-            <RoundButton content='.' />
-            <RoundButton content='=' variant='accent' />
-
+          {/* <View className=' border-cyan-500 border-2 rounded-full justify-center items-center w-28 h-28 '>
+            <Text className='text-slate-100'>
+              
+            </Text>
           </View> */}
+
+        </View>
+
       </View>
     </SafeAreaView>
   );
