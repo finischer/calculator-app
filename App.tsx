@@ -3,11 +3,19 @@ import { Text, View, SafeAreaView, Pressable, Animated, Easing } from 'react-nat
 import React, { useRef, useState } from "react";
 import LottieView from 'lottie-react-native';
 import Countdown from './src/components/Countdown';
+import { Settings } from 'react-native-feather';
+import SettingModal from './src/components/SettingModal';
+import useSettings from './src/hooks/useSettings';
+
+
 
 export default function App() {
   const [isPlayed, setIsPlayed] = useState(false);
   const animation = useRef<LottieView>(null);
   const animationProgress = useRef(new Animated.Value(0))
+  const [showSettings, setShowSettings] = useState(false)
+  const { settings } = useSettings()
+
 
   const togglePlayButton = () => {
     if (!isPlayed) {
@@ -37,22 +45,34 @@ export default function App() {
     setIsPlayed(false)
   }
 
-
-
-  return (
+  return (<>
+    <SettingModal
+      visible={showSettings}
+      onRequestClose={() => setShowSettings(false)}
+    />
     <SafeAreaView className="flex-1 justify-end items-center bg-slate-800">
       <StatusBar style="light" />
-      <View className="p-5">
-        <View className="text-center justify-center items-center">
+      <View className="p-5 relative">
+        <View className="text-center justify-center items-center flex-row">
           <Text className="text-slate-100 text-lg">Workout Timer</Text>
+          <View className='absolute right-5'>
+            <Settings
+              onPress={() => setShowSettings(true)}
+              color="#F1F5F9"
+              width={28}
+              height={28}
+            />
+          </View>
         </View>
 
         <View className="flex-1 items-center justify-center py-5 w-full">
           <Countdown
-            from={5}
+            from={settings.workoutTimerSeconds}
+            pauseSeconds={settings.workoutPauseSeconds}
             playing={isPlayed}
             setPlaying={setIsPlayed}
-            phase='Pause'
+            phases={settings.numberPhases}
+            activePhase={0}
             onFinish={stopCounter}
           />
         </View>
@@ -74,7 +94,7 @@ export default function App() {
 
           {/* <View className=' border-cyan-500 border-2 rounded-full justify-center items-center w-28 h-28 '>
             <Text className='text-slate-100'>
-              
+
             </Text>
           </View> */}
 
@@ -82,5 +102,6 @@ export default function App() {
 
       </View>
     </SafeAreaView>
+  </>
   );
 }

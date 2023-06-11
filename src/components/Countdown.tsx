@@ -4,12 +4,14 @@ import React, { useState, useEffect, SetStateAction } from 'react'
 interface ICountdownProps {
     playing?: boolean
     from: number // in seconds
+    pauseSeconds: number;
     setPlaying: React.Dispatch<React.SetStateAction<boolean>>
-    phase: string
+    phases: number
+    activePhase: number
     onFinish?: () => void
 }
 
-const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlaying, phase, onFinish = () => null }) => {
+const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlaying, phases, activePhase, onFinish = () => null }) => {
     const [minutes, setMinutes] = useState(-1)
     const [seconds, setSeconds] = useState(-1)
 
@@ -31,6 +33,8 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
         let interval: NodeJS.Timer | null = null;
 
         if (playing) {
+            initCounter()
+
             interval = setInterval(() => {
                 setSeconds(oldSeconds => {
                     if (oldSeconds === 0) {
@@ -58,10 +62,6 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
         if (seconds === 0 && minutes === 0) {
             setPlaying(false)
             onFinish()
-
-            setTimeout(() => {
-                initCounter()
-            }, 500)
         }
     }, [seconds])
 
@@ -71,6 +71,9 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
 
     return (
         <View className='flex-1 flex-column justify-center items-center w-screen'>
+            <View className="py-10">
+                <Text className='text-slate-100 text-xl'>Phase {activePhase} / {phases}</Text>
+            </View>
             <View className='flex-row'>
                 <Text className='text-slate-100 text-7xl w-24 text-center'>{formatNumber(minutes)}</Text>
                 <Text className='text-slate-100 text-7xl'>:</Text>
@@ -78,7 +81,7 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
             </View>
 
             <View className=''>
-                <Text className='text-slate-100'>{phase}</Text>
+                <Text className='text-slate-100'>{playing ? "Aktiv" : "Pause"}</Text>
             </View>
         </View>
     )
