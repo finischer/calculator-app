@@ -54,20 +54,26 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
     }, [playing])
 
     useEffect(() => {
-        if (seconds === 0 && minutes !== 0) {
-            setMinutes(oldMinutes => oldMinutes - 1)
-            setSeconds(0)
+        if (seconds === 59 && minutes !== 0) {
+            setMinutes(oldMinutes => {
+                if (playing) {
+                    return oldMinutes - 1
+                }
+
+                return oldMinutes
+            })
+            setSeconds(59)
         }
 
         if (seconds === 0 && minutes === 0) {
             setPlaying(false)
             onFinish()
         }
-    }, [seconds])
+    }, [seconds, playing])
 
     useEffect(() => {
         initCounter()
-    }, [])
+    }, [from])
 
     return (
         <View className='flex-1 flex-column justify-center items-center w-screen'>

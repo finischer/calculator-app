@@ -16,7 +16,6 @@ export default function App() {
   const [showSettings, setShowSettings] = useState(false)
   const { settings } = useSettings()
 
-
   const togglePlayButton = () => {
     if (!isPlayed) {
       startCounter()

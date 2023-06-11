@@ -28,10 +28,9 @@ const useSettings = () => {
         try {
 
             const localSettingsString = await AsyncStorage.getItem("settings")
-            console.log("LocalSettings: ", localSettingsString)
             if (localSettingsString) {
-
                 const settingsJson = JSON.parse(localSettingsString)
+                console.log("LocalSettings: ", settingsJson)
                 setSettings(settingsJson)
             }
         } catch (e) {

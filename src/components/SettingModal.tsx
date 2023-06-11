@@ -1,9 +1,8 @@
-import { View, Text, Modal, ModalProps, Pressable, ActionSheetIOS, Alert } from 'react-native'
-import React, { useRef } from 'react'
-import { ISettingRow } from './SettingRow'
-import RowSection from './RowSection'
+import React from 'react'
+import { Alert, Modal, ModalProps, Text, View } from 'react-native'
 import useSettings, { TSettings } from '../hooks/useSettings'
-import { Picker } from '@react-native-picker/picker';
+import RowSection from './RowSection'
+import { ISettingRow } from './SettingRow'
 
 
 interface ISettingModal {
@@ -16,10 +15,10 @@ type TSettingModal = ISettingModal & ModalProps
 const SettingModal: React.FC<TSettingModal> = (props) => {
     const { settings, updateSettings } = useSettings()
 
-    const handleClick = (title: string, value: string | number, settingKey: keyof TSettings) => {
+    const handleClick = (title: string, msg: string, value: string | number, settingKey: keyof TSettings) => {
         Alert.prompt(
             title,
-            "Wie viele Phasen beinhaltet dein Workout?",
+            msg,
             [
                 {
                     text: "Speichern",
@@ -42,12 +41,26 @@ const SettingModal: React.FC<TSettingModal> = (props) => {
     const rows: ISettingRow[] = [
         {
             title: "Workout Timer",
-            onClick: () => null,
+            onClick: function () {
+                handleClick(
+                    "Workout Timer",
+                    "Wie viele Sekunden soll eine Übung gehen?",
+                    settings.workoutTimerSeconds,
+                    "workoutTimerSeconds"
+                )
+            },
             value: `${settings.workoutTimerSeconds}s`
         },
         {
             title: "Pause",
-            onClick: () => null,
+            onClick: function () {
+                handleClick(
+                    "Pause Timer",
+                    "Wie viele Sekunden Pause möchtest du zwischen den Übungen haben?",
+                    settings.workoutPauseSeconds,
+                    "workoutPauseSeconds"
+                )
+            },
             value: `${settings.workoutPauseSeconds}s`
         },
         {
@@ -55,6 +68,7 @@ const SettingModal: React.FC<TSettingModal> = (props) => {
             onClick: function () {
                 handleClick(
                     "Anzahl Phasen",
+                    "Wie viele Phasen beinhaltet dein Workout?",
                     settings.numberPhases,
                     "numberPhases"
                 )

@@ -29,7 +29,7 @@ const SettingRow: React.FC<ISettingRow> = ({ title, onClick, value, topBorder = 
                 <View className='flex-row gap-2 '>
                     <Text className='text-slate-400 text-base font-normal'>{value || ""}</Text>
                     <ChevronRight
-                        color="#475569"
+                        color={fingerOnRow ? "#F1F5F9" : "#475569"}
                     />
                 </View>
             </View>
