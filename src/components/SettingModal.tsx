@@ -1,6 +1,6 @@
 import React from 'react'
 import { Alert, Modal, ModalProps, Text, View } from 'react-native'
-import useSettings, { TSettings } from '../hooks/useSettings'
+import { TSettings, useSettings } from '../hooks/useSettings'
 import RowSection from './RowSection'
 import { ISettingRow } from './SettingRow'
 

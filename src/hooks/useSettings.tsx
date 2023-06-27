@@ -1,17 +1,22 @@
 import { Alert } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext, useContext } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export type TSettings = {
-    workoutTimerSeconds: number,
-    workoutPauseSeconds: number,
-    numberPhases: number
+    workoutTimerSeconds: string,
+    workoutPauseSeconds: string,
+    numberPhases: string
 }
 
+export interface ISettingsContext {
+    settings: TSettings;
+    updateSettings: (newSettings: TSettings) => void
+};
+
 const DEFAULT_SETTINGS: TSettings = {
-    numberPhases: 10,
-    workoutTimerSeconds: 30,
-    workoutPauseSeconds: 20
+    numberPhases: "10",
+    workoutTimerSeconds: "30",
+    workoutPauseSeconds: "20"
 }
 
 const showErrorAlert = () => {
@@ -21,16 +26,16 @@ const showErrorAlert = () => {
     )
 }
 
-const useSettings = () => {
+const SettingsContext = createContext<ISettingsContext | undefined>(undefined);
+
+const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [settings, setSettings] = useState(DEFAULT_SETTINGS)
 
     const initSettings = async () => {
         try {
-
             const localSettingsString = await AsyncStorage.getItem("settings")
             if (localSettingsString) {
                 const settingsJson = JSON.parse(localSettingsString)
-                console.log("LocalSettings: ", settingsJson)
                 setSettings(settingsJson)
             }
         } catch (e) {
@@ -51,7 +56,25 @@ const useSettings = () => {
         initSettings()
     }, [])
 
-    return { settings, updateSettings }
+    return (
+        <SettingsContext.Provider
+            value={{
+                settings,
+                updateSettings
+            }}
+        >
+            {children}
+        </SettingsContext.Provider>
+    )
 }
 
-export default useSettings
+const useSettings = () => {
+    const context = useContext(SettingsContext);
+
+    if (context === undefined) {
+        throw Error("useSettings must be used within MetadataProvider");
+    }
+    return context;
+};
+
+export { useSettings, SettingsProvider }

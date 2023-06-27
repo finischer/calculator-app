@@ -1,26 +1,63 @@
 import { View, Text } from 'react-native'
-import React, { useState, useEffect, SetStateAction } from 'react'
+import React, { useState, useEffect, SetStateAction, useImperativeHandle } from 'react'
+import { useSettings } from '../hooks/useSettings';
 
 interface ICountdownProps {
     playing?: boolean
-    from: number // in seconds
-    pauseSeconds: number;
     setPlaying: React.Dispatch<React.SetStateAction<boolean>>
-    phases: number
-    activePhase: number
+    numOfPhases: number
     onFinish?: () => void
 }
 
-const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlaying, phases, activePhase, onFinish = () => null }) => {
+export interface ICountdownFunctions {
+    resetTimer: () => void
+}
+
+const Countdown = React.forwardRef<ICountdownFunctions, ICountdownProps>(({ playing = false, setPlaying, numOfPhases, onFinish = () => null }, ref) => {
+    const { settings } = useSettings();
+
     const [minutes, setMinutes] = useState(-1)
     const [seconds, setSeconds] = useState(-1)
+    const [activePhase, setActivePhase] = useState(0)
+
+    const phases = new Array(numOfPhases).fill(undefined).map((_, index) => {
+        if (index % 2 === 0) {
+            // workout phase
+            return {
+                phaseLabel: "workout",
+                phaseTitle: "Aktiv",
+                timerSecondsStart: parseInt(settings.workoutTimerSeconds)
+            }
+        }
+
+        // break phase
+        return {
+            phaseLabel: "break",
+            phaseTitle: "Pause",
+            timerSecondsStart: parseInt(settings.workoutPauseSeconds)
+        }
+    })
+
+    const currPhase = phases[activePhase]
+
+    useImperativeHandle(ref, () => ({
+        resetTimer: () => {
+            resetTimer()
+        },
+
+    }))
+
+    const resetTimer = () => {
+        setActivePhase(0)
+        initCounter(parseInt(settings.workoutTimerSeconds))
+    }
 
     const formatNumber = (n: number) => {
         let formatted = "0" + n
         return formatted.slice(-2)
     }
 
-    const initCounter = () => {
+    const initCounter = (from: number) => {
         // setup minutes and seconds
         const minutes = Math.floor(from / 60)
         const seconds = from % 60
@@ -29,11 +66,15 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
         setSeconds(seconds)
     }
 
+    const playNextPhase = () => {
+        setActivePhase(oldPhase => oldPhase + 1)
+    }
+
     useEffect(() => {
         let interval: NodeJS.Timer | null = null;
 
         if (playing) {
-            initCounter()
+            initCounter(currPhase.timerSecondsStart)
 
             interval = setInterval(() => {
                 setSeconds(oldSeconds => {
@@ -51,7 +92,7 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
                 clearInterval(interval)
             }
         }
-    }, [playing])
+    }, [playing, activePhase])
 
     useEffect(() => {
         if (seconds === 59 && minutes !== 0) {
@@ -66,19 +107,25 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
         }
 
         if (seconds === 0 && minutes === 0) {
-            setPlaying(false)
-            onFinish()
+            if (activePhase === numOfPhases - 1) {
+                setPlaying(false)
+                onFinish()
+            } else {
+                setTimeout(() => {
+                    playNextPhase()
+                }, 1000)
+            }
         }
     }, [seconds, playing])
 
     useEffect(() => {
-        initCounter()
-    }, [from])
+        initCounter(currPhase.timerSecondsStart)
+    }, [settings])
 
     return (
         <View className='flex-1 flex-column justify-center items-center w-screen'>
             <View className="py-10">
-                <Text className='text-slate-100 text-xl'>Phase {activePhase} / {phases}</Text>
+                <Text className='text-slate-100 text-xl'>Phase {activePhase} / {numOfPhases}</Text>
             </View>
             <View className='flex-row'>
                 <Text className='text-slate-100 text-7xl w-24 text-center'>{formatNumber(minutes)}</Text>
@@ -87,10 +134,10 @@ const Countdown: React.FC<ICountdownProps> = ({ playing = false, from, setPlayin
             </View>
 
             <View className=''>
-                <Text className='text-slate-100'>{playing ? "Aktiv" : "Pause"}</Text>
+                <Text className='text-slate-100'>{playing ? currPhase.phaseTitle : "Timer gestoppt"}</Text>
             </View>
         </View>
     )
-}
+})
 
 export default Countdown
