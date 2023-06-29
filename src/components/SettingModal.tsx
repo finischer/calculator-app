@@ -3,14 +3,12 @@ import { Alert, Modal, ModalProps, Text, View } from 'react-native'
 import { TSettings, useSettings } from '../hooks/useSettings'
 import RowSection from './RowSection'
 import { ISettingRow } from './SettingRow'
-
+import { version as appVersion } from '../../package.json';
 
 interface ISettingModal {
 }
 
 type TSettingModal = ISettingModal & ModalProps
-
-
 
 const SettingModal: React.FC<TSettingModal> = (props) => {
     const { settings, updateSettings } = useSettings()
@@ -92,7 +90,7 @@ const SettingModal: React.FC<TSettingModal> = (props) => {
             animationType='slide'
             presentationStyle='formSheet'
         >
-            <View className=' flex-1 bg-slate-800 p-5'>
+            <View className='flex-1 bg-slate-800 p-5'>
                 <View className=''>
                     <Text className='text-center text-slate-100 text-lg font-semibold'>Einstellungen</Text>
                 </View>
@@ -100,7 +98,13 @@ const SettingModal: React.FC<TSettingModal> = (props) => {
                 <View className='mt-10'>
                     <RowSection rows={rows} withMarginTop={false} />
                 </View>
+
+                <View className='mt-10'>
+                    <Text className='text-center text-slate-600'>Made by Niklas Fischer</Text>
+                    <Text className='text-center text-slate-600'>v{appVersion}</Text>
+                </View>
             </View>
+
         </Modal >
     )
 }
