@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "workout-timer",
+    "name": "Workout Timer",
     "slug": "workout-timer",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,6 +20,17 @@
         "foregroundImage": "./assets/images/workout-timer-adaptive-app-icon.png",
         "backgroundColor": "#1e293b"
       }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "50b9ed9d-7e67-4440-87e1-c5b6af80ac4d"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/50b9ed9d-7e67-4440-87e1-c5b6af80ac4d"
     }
   }
 }
