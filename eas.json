@@ -17,6 +17,17 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "C:/Users/Acer/iCloudDrive/[01] Niklas/[06] Business/[01] NiklasFischerSoftware/[05] Workout-Timer/[01] Development/pc-api-5565718166789756710-441-1b06bd48bf19.json",
+        "track": "internal"
+      },
+      "ios": {
+        "appleId": "niklasfischer0@gmail.com",
+        "ascAppId": "6463042073",
+        "appleTeamId": "DA2TY6CRFB",
+        "language": "de-DE"
+      }
+    }
   }
 }

@@ -13,7 +13,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.niklasfischer0.workouttimer"
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +32,14 @@
     },
     "updates": {
       "url": "https://u.expo.dev/50b9ed9d-7e67-4440-87e1-c5b6af80ac4d"
-    }
+    },
+    "plugins": [
+      [
+        "expo-updates",
+        {
+          "username": "niklasfischer0"
+        }
+      ]
+    ]
   }
 }
